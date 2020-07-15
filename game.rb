@@ -10,17 +10,15 @@ class Game
   end
 
   def play
+    p @code
+    p @board.peg_colors
     loop do
-      p @round
-      p @board.peg_colors
       puts 'Choose a peg colour:'
       choose_peg
       @board.current_choice.push(@choice)
       @board.codebreaker_display
       check_winner
-      if @game_over
-        break
-      end
+      break if @game_over === true
       if @board.current_choice.length === 4 && @round < 12
         @round += 1
         codebreaker_feedback
@@ -42,10 +40,10 @@ class Game
   def codebreaker_feedback
     @matched_pegs = @code & @board.current_choice
     @matched_pegs.each do |peg|
-      if @code.rindex(peg) === @board.current_choice.rindex(peg)
-        @board.feedback[@code.rindex(peg)] = 'Red'
-      else
-        @board.feedback[@code.rindex(peg)] = 'White'
+      if @code.index(peg) === @board.current_choice.index(peg)
+        @board.feedback[@code.index(peg)] = 'Red'
+      else 
+        @board.feedback[@code.index(peg)] = 'White'
       end
     end
       @board.display_board[@board.current_choice] = @board.feedback
@@ -54,14 +52,14 @@ class Game
   def check_winner
     if @board.current_choice === @code
       @game_over = true
+      p @game_over
       puts 'WINNER! You cracked the code!'
     end
   end
 
   def reset_round
-    @board.current_choice.clear
+    @board.current_choice = Array.new
     @matched_pegs.clear
-    @board.feedback === []
+    @board.feedback = Array.new(4, nil)
   end
-
 end
