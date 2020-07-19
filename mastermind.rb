@@ -15,9 +15,16 @@ require_relative 'board.rb'
 require_relative 'players.rb'
 require_relative 'game.rb'
 
-players = Players.new
-pegs = players.pegs
-code = players.random_code
+play = Players.new
+pegs = play.pegs
+
+codebreaker_or_codemaker = play.player
+select_player = play.select_player(codebreaker_or_codemaker)
+
+player = select_player.new
+code = player.random_code
+p code
+
 board = Board.new(code, pegs)
 game = Game.new(board)
 game.play

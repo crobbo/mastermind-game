@@ -6,7 +6,7 @@ class Board
   def initialize(code, pegs)      #instantiates with two arrays
     @code = code
     @current_choice = []
-    @feedback = [nil, nil, nil, nil]
+    @feedback = []
     @peg_colors = pegs
     @display_board = {}
   end

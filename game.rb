@@ -6,30 +6,32 @@ class Game
     @code = @board.code
     @matched_pegs = []
     @round = 1
-    @game_over = false
   end
 
   def play
-    p @code
-    p @board.peg_colors
-    loop do
+    puts "\n"
+    puts "Can you CRACK the code? Let's go!"
+    puts "\n"
+    loop do      
+      p @board.peg_colors
       puts 'Choose a peg colour:'
       choose_peg
       @board.current_choice.push(@choice)
       @board.codebreaker_display
       check_winner
-      break if @game_over === true
+      break if game_over? == true
+
       if @board.current_choice.length === 4 && @round < 12
         @round += 1
         codebreaker_feedback
         @board.cumulative_display
         reset_round
-        play
       elsif @board.current_choice.length < 4
-        play
+        next
       else
         puts 'YOU LOSE! Computer wins!'
       end
+
     end
   end
 
@@ -38,21 +40,30 @@ class Game
   end
 
   def codebreaker_feedback
-    @matched_pegs = @code & @board.current_choice
-    @matched_pegs.each do |peg|
-      if @code.index(peg) === @board.current_choice.index(peg)
-        @board.feedback[@code.index(peg)] = 'Red'
-      else 
-        @board.feedback[@code.index(peg)] = 'White'
+    @temp_code = @code.map(&:clone)
+    @board.current_choice.each_with_index do |peg, i|
+      if @code.index(peg) == i
+        @board.feedback.push('Red')
+        @temp_code[i] = ' '
+      end 
+    end     
+    @board.current_choice.each_with_index do |pegg, i|
+      if @temp_code.include?(pegg)
+        @board.feedback.push('White')
+        @temp_code[@temp_code.index(pegg)] = ' '
       end
     end
-      @board.display_board[@board.current_choice] = @board.feedback
+
+  @board.display_board[@board.current_choice] = @board.feedback
+
+  end
+
+  def game_over?
+    @board.current_choice == @code
   end
 
   def check_winner
     if @board.current_choice === @code
-      @game_over = true
-      p @game_over
       puts 'WINNER! You cracked the code!'
     end
   end
@@ -60,6 +71,6 @@ class Game
   def reset_round
     @board.current_choice = Array.new
     @matched_pegs.clear
-    @board.feedback = Array.new(4, nil)
+    @board.feedback = Array.new
   end
 end
