@@ -6,21 +6,25 @@ class Game
     @code = @board.code
     @matched_pegs = []
     @round = 1
+    @codemaker = false
+    @computer_guess = Hash.new
   end
 
-  def play
+  def play 
+    p @code
+    @codemaker = false
     puts "\n"
     puts "Can you CRACK the code? Let's go!"
     puts "\n"
-    loop do      
+    loop do
+       
       p @board.peg_colors
       puts 'Choose a peg colour:'
       choose_peg
       @board.current_choice.push(@choice)
       @board.codebreaker_display
       check_winner
-      break if game_over? == true
-
+      break if game_over?
       if @board.current_choice.length === 4 && @round < 12
         @round += 1
         codebreaker_feedback
@@ -35,6 +39,31 @@ class Game
     end
   end
 
+  def computer_play
+    @codemaker = true
+    loop do 
+      while @board.current_choice.length < 4
+      @board.current_choice.push(computer_choose_peg)
+      end
+      matched_pegs
+      codebreaker_feedback
+      @round += 1
+      @board.cumulative_display      
+      check_winner
+      break if game_over?
+      if @round == 13
+        puts "YOU WIN! Your code held up."
+      end
+      break if @round == 13    
+      reset_round     
+    end    
+    puts "Your code:  #{@code}"   
+  end
+
+  def computer_choose_peg
+    @board.peg_colors.sample
+  end
+
   def choose_peg
     @choice = gets.chomp
   end
@@ -45,6 +74,7 @@ class Game
       if @code.index(peg) == i
         @board.feedback.push('Red')
         @temp_code[i] = ' '
+        @computer_guess[peg] = i
       end 
     end     
     @board.current_choice.each_with_index do |pegg, i|
@@ -53,9 +83,13 @@ class Game
         @temp_code[@temp_code.index(pegg)] = ' '
       end
     end
-
   @board.display_board[@board.current_choice] = @board.feedback
+  end
 
+  def matched_pegs
+    @computer_guess.each do |key, value|
+      @board.current_choice[value] = key
+    end
   end
 
   def game_over?
@@ -63,7 +97,9 @@ class Game
   end
 
   def check_winner
-    if @board.current_choice === @code
+    if game_over? && @codemaker
+      puts 'LOSER! Computer cracked the code!'
+    elsif game_over? 
       puts 'WINNER! You cracked the code!'
     end
   end

@@ -38,12 +38,16 @@ class Codemaker < Players
 
   def get_code    ## thids needs re-coding
     puts "\n"
+    puts "Choose from these 6 pegs: "
     puts "#{@peg_colors}" 
     puts "\n"
+    puts "OK. Let's go!"
+    puts "Enter a colour & press enter. Choose 4."
     code = []
-    while  code.length < 5
+    while  code.length < 4
     code.push(gets.chomp)
     end
+    code
   end
 end
 
